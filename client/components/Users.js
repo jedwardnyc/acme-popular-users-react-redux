@@ -8,7 +8,7 @@ class Users extends React.Component {
     super(props);
     this.state = {
       users: this.props.users,
-      rank: 0
+      rank: 0,
     }
     this.add = this.add.bind(this)
   }
@@ -33,9 +33,10 @@ class Users extends React.Component {
                 {user.name}
               </NavLink>
               <br />
-              <button onClick={()=>this.subtract(user)}> - </button>
+              <br />
+              <button className='btn btn-outline-secondary btn-sm' onClick={()=>this.subtract(user)}> - </button>
                 &nbsp;{user.rank}&nbsp;
-              <button onClick={()=>this.add(user)}> + </button>
+              <button className='btn btn-outline-secondary btn-sm' onClick={()=>this.add(user)}> + </button> 
             </li>
           ))
         }
@@ -47,7 +48,7 @@ class Users extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    users: state.users
+    users: state.users,
   };
 };
 

@@ -16,10 +16,12 @@ class App extends React.Component {
 
   render(){
     return (
-      
+      <div>
+      <h1>ACME Company's Leaderboard</h1>
       <Router>
         <div>
         <Nav />
+        <br />
           <Route path='/' exact component={ Home } />
           <Route path='/users' exact component={ Users } />
           <Route path='/users/:id' render = {
@@ -28,6 +30,7 @@ class App extends React.Component {
           <Route path='/users/create' component={ UserCreate } />
         </div>
       </Router>
+      </div>
     )
   } 
 }

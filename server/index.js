@@ -21,23 +21,32 @@ app.get('/api/users', (req,res,next)=>{
     order:[[ 'rank', 'DESC']]
   })
     .then(users => res.send(users))
+    .catch(next)
 });
 
 app.post('/api/users', (req,res,next)=>{
   User.create(req.body)
     .then(user => res.send(user))
+    .catch(next)
 });
 
 app.put('/api/users/:id', (req,res,next)=>{
   User.findById(req.params.id)
     .then(user => user.update(req.body))
     .then(user => res.send(user))
+    .catch(next)
 });
 
 app.delete('/api/users/:id', (req,res,next)=>{
   User.findById(req.params.id)
     .then(user => user.destroy())
     .then(() => res.sendStatus(204))
+    .catch(next)
+});
+
+app.use((err,req,res,next)=>{
+  console.log("*** There is an error: ",  `${err.message}`)
+  res.status(500).send(err);
 });
 
 db.syncAndSeed();

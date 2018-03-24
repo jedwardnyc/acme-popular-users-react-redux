@@ -51,15 +51,18 @@ class User extends React.Component {
     }
     return (
       <div>
-        <h1>Edit {user.name}</h1>
-        <form onSubmit={this.onSubmit}>
-          <input name='name' value={name} onChange={this.onChange}/>
+        <h1>Edit {user.name}?</h1>
+        <br />
+        <form className='form-control' onSubmit={this.onSubmit}>
+          <label>Name: </label>
+          <input className='form-control' name='name' value={name} onChange={this.onChange}/>
           <br />
-          <input name='rank' value={rank} onChange={this.onChange}/>
+          <label>Rank: </label>
+          <input className='form-control' type='number' name='rank' value={rank} onChange={this.onChange}/>
           <br />
-          <button> Update </button>
+          <button disabled={name.length ? false : true} className='btn btn-secondary btn-block' > Update </button>
+          <button className='btn btn-danger btn-block' onClick = {this.onDelete}> Delete </button>
         </form>
-        <button onClick = {this.onDelete}> Delete </button>
       </div>
     )
   };

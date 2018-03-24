@@ -1104,7 +1104,7 @@ var createPath = function createPath(location) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateRank = exports.deleteUser = exports.updateUser = exports.createUser = exports.fetchUsers = undefined;
+exports.updateRank = exports.deleteUser = exports.updateUser = exports.createUser = exports.fetchUsers = exports.handleErrors = undefined;
 
 var _redux = __webpack_require__(37);
 
@@ -1121,13 +1121,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var initialState = {
-  users: []
+  users: [],
+  error: ''
 };
 
 var GET_USERS = 'GET_USERS';
 var CREATE_USER = 'CREATE_USER';
 var UPDATE_USER = 'UPDATE_USER';
 var DELETE_USER = 'DELETE_USER';
+var ERROR = 'ERROR';
 
 var reducer = function reducer() {
   var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
@@ -1150,9 +1152,16 @@ var reducer = function reducer() {
           return user.id !== action.user.id * 1;
         })
       });
+    case ERROR:
+      return Object.assign({}, state, { error: action.error });
     default:
       return state;
   }
+};
+
+var handleErrors = exports.handleErrors = function handleErrors(error) {
+  var _error = error ? error.response.data.errors[0].message : '';
+  return { type: ERROR, error: _error };
 };
 
 var fetchUsers = exports.fetchUsers = function fetchUsers() {
@@ -1161,6 +1170,8 @@ var fetchUsers = exports.fetchUsers = function fetchUsers() {
       return res.data;
     }).then(function (users) {
       return dispatch({ type: GET_USERS, users: users });
+    }).catch(function (err) {
+      return dispatch(handleErrors(err));
     });
   };
 };
@@ -1173,6 +1184,8 @@ var createUser = exports.createUser = function createUser(user, history) {
       return dispatch({ type: CREATE_USER, user: user });
     }).then(function () {
       return history.push('/users');
+    }).catch(function (err) {
+      return dispatch(handleErrors(err));
     });
   };
 };
@@ -1185,6 +1198,8 @@ var updateUser = exports.updateUser = function updateUser(user, history) {
       return dispatch({ type: UPDATE_USER, user: user });
     }).then(function () {
       return history.push('/users');
+    }).catch(function (err) {
+      return dispatch(handleErrors(err));
     });
   };
 };
@@ -1195,6 +1210,8 @@ var deleteUser = exports.deleteUser = function deleteUser(user, history) {
       return dispatch({ type: DELETE_USER, user: user });
     }).then(function () {
       return history.push('/users');
+    }).catch(function (err) {
+      return dispatch(handleErrors(err));
     });
   };
 };
@@ -1205,6 +1222,8 @@ var updateRank = exports.updateRank = function updateRank(user) {
       return res.data;
     }).then(function (user) {
       return dispatch({ type: UPDATE_USER, user: user });
+    }).catch(function (err) {
+      return dispatch(handleErrors(err.message));
     });
   };
 };
@@ -21589,20 +21608,30 @@ var App = function (_React$Component) {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
-        _reactRouterDom.HashRouter,
+        'div',
         null,
         _react2.default.createElement(
-          'div',
+          'h1',
           null,
-          _react2.default.createElement(_Nav2.default, null),
-          _react2.default.createElement(_reactRouterDom.Route, { path: '/', exact: true, component: _Home2.default }),
-          _react2.default.createElement(_reactRouterDom.Route, { path: '/users', exact: true, component: _Users2.default }),
-          _react2.default.createElement(_reactRouterDom.Route, { path: '/users/:id', render: function render(_ref) {
-              var match = _ref.match,
-                  history = _ref.history;
-              return _react2.default.createElement(_User2.default, { id: match.params.id, history: history });
-            } }),
-          _react2.default.createElement(_reactRouterDom.Route, { path: '/users/create', component: _UserCreate2.default })
+          'ACME Company\'s Leaderboard'
+        ),
+        _react2.default.createElement(
+          _reactRouterDom.HashRouter,
+          null,
+          _react2.default.createElement(
+            'div',
+            null,
+            _react2.default.createElement(_Nav2.default, null),
+            _react2.default.createElement('br', null),
+            _react2.default.createElement(_reactRouterDom.Route, { path: '/', exact: true, component: _Home2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: '/users', exact: true, component: _Users2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: '/users/:id', render: function render(_ref) {
+                var match = _ref.match,
+                    history = _ref.history;
+                return _react2.default.createElement(_User2.default, { id: match.params.id, history: history });
+              } }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: '/users/create', component: _UserCreate2.default })
+          )
         )
       );
     }
@@ -26414,9 +26443,10 @@ var Users = function (_React$Component) {
               user.name
             ),
             _react2.default.createElement('br', null),
+            _react2.default.createElement('br', null),
             _react2.default.createElement(
               'button',
-              { onClick: function onClick() {
+              { className: 'btn btn-outline-secondary btn-sm', onClick: function onClick() {
                   return _this2.subtract(user);
                 } },
               ' - '
@@ -26426,7 +26456,7 @@ var Users = function (_React$Component) {
             '\xA0',
             _react2.default.createElement(
               'button',
-              { onClick: function onClick() {
+              { className: 'btn btn-outline-secondary btn-sm', onClick: function onClick() {
                   return _this2.add(user);
                 } },
               ' + '
@@ -27475,25 +27505,37 @@ var User = function (_React$Component) {
           'h1',
           null,
           'Edit ',
-          user.name
+          user.name,
+          '?'
         ),
+        _react2.default.createElement('br', null),
         _react2.default.createElement(
           'form',
-          { onSubmit: this.onSubmit },
-          _react2.default.createElement('input', { name: 'name', value: name, onChange: this.onChange }),
+          { className: 'form-control', onSubmit: this.onSubmit },
+          _react2.default.createElement(
+            'label',
+            null,
+            'Name: '
+          ),
+          _react2.default.createElement('input', { className: 'form-control', name: 'name', value: name, onChange: this.onChange }),
           _react2.default.createElement('br', null),
-          _react2.default.createElement('input', { name: 'rank', value: rank, onChange: this.onChange }),
+          _react2.default.createElement(
+            'label',
+            null,
+            'Rank: '
+          ),
+          _react2.default.createElement('input', { className: 'form-control', type: 'number', name: 'rank', value: rank, onChange: this.onChange }),
           _react2.default.createElement('br', null),
           _react2.default.createElement(
             'button',
-            null,
+            { disabled: name.length ? false : true, className: 'btn btn-secondary btn-block' },
             ' Update '
+          ),
+          _react2.default.createElement(
+            'button',
+            { className: 'btn btn-danger btn-block', onClick: this.onDelete },
+            ' Delete '
           )
-        ),
-        _react2.default.createElement(
-          'button',
-          { onClick: this.onDelete },
-          ' Delete '
         )
       );
     }
@@ -27551,6 +27593,8 @@ var _reactRedux = __webpack_require__(7);
 
 var _store = __webpack_require__(12);
 
+var _store2 = _interopRequireDefault(_store);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -27570,7 +27614,7 @@ var UserCreate = function (_React$Component) {
     _this.state = {
       user: {
         name: '',
-        rank: ''
+        rank: 0
       }
     };
     _this.onChange = _this.onChange.bind(_this);
@@ -27595,28 +27639,65 @@ var UserCreate = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
+      var _this2 = this;
+
       var _state$user = this.state.user,
           name = _state$user.name,
           rank = _state$user.rank;
 
       return _react2.default.createElement(
         'div',
-        null,
+        { className: 'form-group' },
         _react2.default.createElement(
           'h1',
           null,
           ' Create a New User '
         ),
+        _react2.default.createElement('br', null),
         _react2.default.createElement(
           'form',
-          { onSubmit: this.onSubmit },
-          _react2.default.createElement('input', { name: 'name', placeholder: 'Enter a Name', onChange: this.onChange }),
+          { className: 'form-control', onSubmit: this.onSubmit },
+          _react2.default.createElement(
+            'label',
+            null,
+            'Name: '
+          ),
+          _react2.default.createElement('input', { className: 'form-control ' + (this.props.error ? 'error' : ''), name: 'name', placeholder: 'Enter a Name', onChange: this.onChange }),
+          this.props.error ? _react2.default.createElement(
+            'div',
+            { id: 'error-message', className: 'alert alert-danger alert-dismissible fade show', role: 'alert' },
+            _react2.default.createElement(
+              'strong',
+              null,
+              'Oh no!'
+            ),
+            ' ',
+            this.props.error,
+            _react2.default.createElement(
+              'button',
+              {
+                onClick: function onClick() {
+                  _this2.props.handleErrors('');
+                },
+                className: 'close', 'data-dismiss': 'alert' },
+              _react2.default.createElement(
+                'span',
+                null,
+                ' \xD7 '
+              )
+            )
+          ) : null,
           _react2.default.createElement('br', null),
-          _react2.default.createElement('input', { name: 'rank', placeholder: 'Enter a Rank', onChange: this.onChange }),
+          _react2.default.createElement(
+            'label',
+            null,
+            'Rank: '
+          ),
+          _react2.default.createElement('input', { className: 'form-control', type: 'number', name: 'rank', defaultValue: '0', onChange: this.onChange }),
           _react2.default.createElement('br', null),
           _react2.default.createElement(
             'button',
-            null,
+            { disabled: name.length ? false : true, className: 'btn btn-secondary btn-lg btn-block' },
             ' Create '
           )
         )
@@ -27629,17 +27710,26 @@ var UserCreate = function (_React$Component) {
 
 ;
 
+var mapStateToProps = function mapStateToProps(state) {
+  return {
+    error: state.error
+  };
+};
+
 var mapDispatchToProps = function mapDispatchToProps(dispatch, _ref) {
   var history = _ref.history;
 
   return {
     createUser: function createUser(user) {
       return dispatch((0, _store.createUser)(user, history));
+    },
+    handleErrors: function handleErrors(error) {
+      return dispatch((0, _store.handleErrors)(error));
     }
   };
 };
 
-exports.default = (0, _reactRedux.connect)(null, mapDispatchToProps)(UserCreate);
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(UserCreate);
 
 /***/ }),
 /* 143 */
@@ -27668,59 +27758,52 @@ var Nav = function Nav(_ref) {
 
 
   return _react2.default.createElement(
-    'div',
-    null,
+    'ul',
+    { className: 'nav justify-content-center' },
     _react2.default.createElement(
-      'ul',
-      { className: 'nav nav-tabs' },
+      'li',
+      { className: 'nav-item' },
       _react2.default.createElement(
-        'li',
-        { className: 'nav-item' },
-        _react2.default.createElement(
-          _reactRouterDom.NavLink,
-          { to: '/' },
-          'Home'
-        )
-      ),
-      ' \xA0',
+        _reactRouterDom.NavLink,
+        { className: 'nav-link', to: '/' },
+        'Home'
+      )
+    ),
+    _react2.default.createElement(
+      'li',
+      { className: 'nav-item' },
       _react2.default.createElement(
-        'li',
-        { className: 'nav-item' },
+        _reactRouterDom.NavLink,
+        { className: 'nav-link', to: '/users' },
+        'Users \xA0',
         _react2.default.createElement(
-          _reactRouterDom.NavLink,
-          { to: '/users' },
-          'Users:',
-          _react2.default.createElement(
-            'span',
-            { className: 'badge badge-pill badge-primary' },
-            users ? users.length : null
-          )
+          'span',
+          { className: 'badge badge-primary' },
+          users ? users.length : null
         )
-      ),
-      ' \xA0',
+      )
+    ),
+    _react2.default.createElement(
+      'li',
+      { className: 'nav-item' },
       _react2.default.createElement(
-        'li',
-        { className: 'nav-item' },
+        _reactRouterDom.NavLink,
+        { className: 'nav-link', to: users.length ? '/users/' + popular.id : '' },
+        'Most Popular Employee: ',
         _react2.default.createElement(
-          _reactRouterDom.NavLink,
-          { to: users.length ? '/users/' + popular.id : '' },
-          'Most Popular:',
-          _react2.default.createElement(
-            'span',
-            { className: 'badge badge-pill badge-primary' },
-            users.length ? popular.name : null
-          )
+          'span',
+          { className: 'badge badge-primary' },
+          users.length ? popular.name : null
         )
-      ),
-      ' \xA0',
+      )
+    ),
+    _react2.default.createElement(
+      'li',
+      { className: 'nav-item' },
       _react2.default.createElement(
-        'li',
-        { className: 'nav-item' },
-        _react2.default.createElement(
-          _reactRouterDom.NavLink,
-          { to: '/users/create' },
-          'Create a User'
-        )
+        _reactRouterDom.NavLink,
+        { className: 'nav-link', to: '/users/create' },
+        'Create a User'
       )
     )
   );
@@ -27731,7 +27814,7 @@ var mapStateToProps = function mapStateToProps(_ref2) {
 
   return {
     users: users.sort(function (a, b) {
-      return a.rank <= b.rank ? 1 : b.rank < a.rank ? -1 : 0;
+      return a.rank < b.rank ? 1 : b.rank < a.rank ? -1 : 0;
     }),
     popular: users.find(function (user) {
       return users.indexOf(user) === 0;
@@ -27760,9 +27843,23 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var Home = function Home() {
   return _react2.default.createElement(
-    'h1',
-    null,
-    ' Home '
+    'div',
+    { className: 'container' },
+    _react2.default.createElement(
+      'h2',
+      null,
+      ' What\'s this all about? '
+    ),
+    _react2.default.createElement(
+      'p',
+      null,
+      ' Now we all know that life isn\'t a popularity contest. But we do like to keep track of who has the best reputation here. Top performer for the month is eligible for a free Apple Watch*'
+    ),
+    _react2.default.createElement(
+      'sub',
+      null,
+      ' *Apple Watch cannot actually be won, sorry. '
+    )
   );
 };
 

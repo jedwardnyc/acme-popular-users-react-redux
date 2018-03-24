@@ -5,42 +5,39 @@ import { NavLink } from 'react-router-dom';
 const Nav = ({ users, popular }) => {
   
   return (
-    <div>
-      <ul className='nav nav-tabs'>
+      <ul className='nav justify-content-center'>
         <li className='nav-item'>
-          <NavLink to='/'>
+          <NavLink className='nav-link' to='/'>
             Home
           </NavLink>
-        </li> &nbsp;
+        </li> 
         <li className='nav-item'>
-          <NavLink to='/users'>
-            Users: 
-            <span className='badge badge-pill badge-primary'>
+          <NavLink className='nav-link' to='/users'>
+            Users &nbsp;
+            <span className='badge badge-primary'>
               {users? users.length : null}
             </span> 
           </NavLink>
-        </li> &nbsp;
+        </li> 
         <li className='nav-item'>
-          <NavLink to={users.length ? `/users/${popular.id}` : ''}>
-            Most Popular: 
-            <span className='badge badge-pill badge-primary'>
+          <NavLink className='nav-link' to={users.length ? `/users/${popular.id}` : ''}>
+            Most Popular Employee: <span className='badge badge-primary'>
               {users.length ? popular.name : null}
-            </span> 
+            </span>
           </NavLink>
-        </li> &nbsp;
+        </li> 
         <li className='nav-item'>
-          <NavLink to='/users/create'>
+          <NavLink className='nav-link' to='/users/create'>
             Create a User 
           </NavLink>
         </li> 
       </ul>
-    </div>
   )
 }
 
 const mapStateToProps = ({users}) => {
   return {
-    users: users.sort((a,b) => (a.rank <= b.rank) ? 1 : ((b.rank < a.rank) ? -1 : 0)),
+    users: users.sort((a,b) => (a.rank < b.rank) ? 1 : ((b.rank < a.rank) ? -1 : 0)),
     popular: users.find(user => users.indexOf(user) === 0)
   }
 };
