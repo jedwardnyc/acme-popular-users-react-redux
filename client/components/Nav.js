@@ -40,7 +40,7 @@ const Nav = ({ users, popular }) => {
 
 const mapStateToProps = ({users}) => {
   return {
-    users,
+    users: users.sort((a,b) => (a.rank <= b.rank) ? 1 : ((b.rank < a.rank) ? -1 : 0)),
     popular: users.find(user => users.indexOf(user) === 0)
   }
 };

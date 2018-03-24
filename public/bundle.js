@@ -26444,9 +26444,7 @@ var Users = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state) {
   return {
-    users: state.users.sort(function (a, b) {
-      return a - b;
-    })
+    users: state.users
   };
 };
 
@@ -27732,7 +27730,9 @@ var mapStateToProps = function mapStateToProps(_ref2) {
   var users = _ref2.users;
 
   return {
-    users: users,
+    users: users.sort(function (a, b) {
+      return a.rank <= b.rank ? 1 : b.rank < a.rank ? -1 : 0;
+    }),
     popular: users.find(function (user) {
       return users.indexOf(user) === 0;
     })
