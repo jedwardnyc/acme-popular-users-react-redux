@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import store, { createUser, handleErrors } from '../store';
+import { createUser, handleErrors } from '../store';
 
 class UserCreate extends React.Component {
   constructor(props){
@@ -63,8 +63,8 @@ class UserCreate extends React.Component {
 const mapStateToProps = (state) => {
   return {
     error: state.error
-  }
-}
+  };
+};
 
 const mapDispatchToProps = (dispatch, { history }) => {
   return{

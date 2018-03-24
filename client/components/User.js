@@ -72,14 +72,14 @@ const mapStateToProps = ({ users }, ownProps) => {
   return {
     user: users.find(user => user.id === ownProps.id*1),
     id: ownProps.id
-  }
+  };
 };
 
 const mapDispatchToProps = (dispatch, { history }) => {
   return {
     updateUser: (user) => dispatch(updateUser(user,history)),
     deleteUser: (user) => dispatch(deleteUser(user,history))
-  }
+  };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(User);

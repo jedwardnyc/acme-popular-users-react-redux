@@ -31,13 +31,13 @@ const reducer = (state = initialState, action) => {
       return Object.assign({}, state, { error: action.error })
     default: 
       return state;
-  }
+  };
 };
 
 export const handleErrors = (error) => {
-  const _error =  error ? error.response.data.errors[0].message : ''
-  return { type: ERROR, error: _error }
-}
+  const _error =  (error ? error.response.data.errors[0].message : '');
+  return { type: ERROR, error: _error };
+};
 
 export const fetchUsers = () => {
   return (dispatch) => {
@@ -86,6 +86,5 @@ export const updateRank = (user) => {
   };
 };
 
-
-const store = createStore(reducer, applyMiddleware(thunk))
+const store = createStore(reducer, applyMiddleware(thunk));
 export default store;

@@ -1156,7 +1156,7 @@ var reducer = function reducer() {
       return Object.assign({}, state, { error: action.error });
     default:
       return state;
-  }
+  };
 };
 
 var handleErrors = exports.handleErrors = function handleErrors(error) {
@@ -27592,8 +27592,6 @@ var _react2 = _interopRequireDefault(_react);
 var _reactRedux = __webpack_require__(7);
 
 var _store = __webpack_require__(12);
-
-var _store2 = _interopRequireDefault(_store);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
