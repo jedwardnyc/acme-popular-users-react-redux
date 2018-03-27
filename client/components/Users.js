@@ -1,63 +1,48 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { fetchUsers, updateRank } from '../store';
+import { updateRank } from '../store';
 import { NavLink } from 'react-router-dom';
 
-class Users extends React.Component { 
-  constructor(props){
-    super(props);
-    this.state = {
-      users: this.props.users,
-      rank: 0,
-    }
-    this.add = this.add.bind(this)
-  }
+const Users = (props) => { 
 
-  add(user){
-    user.rank++
-    this.props.updateRank(user)
-  }
+  return(
+    <ul className='list-group'>
+      {
+        props.users.map(user => (
+          <li className='list-group-item' key={user.id}>
+            <NavLink to={`/users/${user.id}`}> 
+              {user.name}
+            </NavLink>
+            <br />
+            <br />
+            <button className='btn btn-outline-secondary btn-sm' onClick={()=>props.subtract(user)}> - </button>
+              &nbsp;{user.rank}&nbsp;
+            <button className='btn btn-outline-secondary btn-sm' onClick={()=>props.add(user)}> + </button> 
+          </li>
+        ))
+      }
+    </ul>
+  )
 
-  subtract(user){
-    user.rank--
-    this.props.updateRank(user)
-  }
-
-  render(){
-    return(
-      <ul className='list-group'>
-        {
-          this.props.users.map(user => (
-            <li className='list-group-item' key={user.id}>
-              <NavLink to={`/users/${user.id}`}> 
-                {user.name}
-              </NavLink>
-              <br />
-              <br />
-              <button className='btn btn-outline-secondary btn-sm' onClick={()=>this.subtract(user)}> - </button>
-                &nbsp;{user.rank}&nbsp;
-              <button className='btn btn-outline-secondary btn-sm' onClick={()=>this.add(user)}> + </button> 
-            </li>
-          ))
-        }
-      </ul>
-    )
-  } 
 };
 
-
-const mapStateToProps = state => {
+const mapStateToProps = ({ users }) => {
   return {
-    users: state.users,
+    users
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    updateRank: (user) => dispatch(updateRank(user))
+    subtract: (user) => {
+      user.rank--
+      return dispatch(updateRank(user))
+    },
+    add: (user) => {
+      user.rank++
+      return dispatch(updateRank(user))
+    }
   }
 }
-
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(Users);
